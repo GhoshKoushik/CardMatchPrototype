@@ -4,18 +4,19 @@ using System;
 
 public class Card : MonoBehaviour
 {
-    public Sprite frontImage;
     public int cardId;
     public Sprite backImage;
-    private bool isFlipped = false;
     public Image cardImage;
 
-  
+    private Sprite frontImage;
+    private bool isFlipped = false;
+
+
     public void Init(int id, Sprite front)
     {
         cardId = id;
         frontImage = front;
-        FlipDown();
+        cardImage.sprite = frontImage;
     }
 
     public void FlipUp()

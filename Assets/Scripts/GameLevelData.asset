@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cfd186620a8fc3448e53597b0fb64c4, type: 3}
+  m_Name: GameLevelData
+  m_EditorClassIdentifier: 
+  levels:
+  - levelName: LevelOne
+    columns: 2
+    cardWidth: 400
+    cardSpacing: 40
+    cardImages:
+    - {fileID: 21300000, guid: 98616dc01e0222d449d4c4e24a282b30, type: 3}
+    - {fileID: 21300000, guid: f85f079e43525ca46bab00c29b095dba, type: 3}
+  - levelName: LevelTwo
+    columns: 3
+    cardWidth: 300
+    cardSpacing: 30
+    cardImages:
+    - {fileID: 21300000, guid: a10da183579c64249aaa0d13c0192d59, type: 3}
+    - {fileID: 21300000, guid: deeb3f52955e2d84c947e6b4099e22d1, type: 3}
+    - {fileID: 21300000, guid: 4f96ebb83b87d0c47bd107e0fe9056b1, type: 3}
+  - levelName: LevelThree
+    columns: 3
+    cardWidth: 300
+    cardSpacing: 30
+    cardImages:
+    - {fileID: 21300000, guid: f76aec74ba1fe4245a63024fb5457150, type: 3}
+    - {fileID: 21300000, guid: 3ecffbdbc2e299e42933931ef5b5bddf, type: 3}
+    - {fileID: 21300000, guid: f85f079e43525ca46bab00c29b095dba, type: 3}
+  - levelName: LevelFour
+    columns: 4
+    cardWidth: 300
+    cardSpacing: 40
+    cardImages:
+    - {fileID: 21300000, guid: 98616dc01e0222d449d4c4e24a282b30, type: 3}
+    - {fileID: 21300000, guid: f85f079e43525ca46bab00c29b095dba, type: 3}
+    - {fileID: 21300000, guid: 4f96ebb83b87d0c47bd107e0fe9056b1, type: 3}
+    - {fileID: 21300000, guid: 33e8c9395625a064db571885c41c7ae1, type: 3}
+  - levelName: LevelFive
+    columns: 4
+    cardWidth: 220
+    cardSpacing: 40
+    cardImages:
+    - {fileID: 21300000, guid: 98616dc01e0222d449d4c4e24a282b30, type: 3}
+    - {fileID: 21300000, guid: f85f079e43525ca46bab00c29b095dba, type: 3}
+    - {fileID: 21300000, guid: 924f1966d178ef24a9695a5681a743eb, type: 3}
+    - {fileID: 21300000, guid: 4f96ebb83b87d0c47bd107e0fe9056b1, type: 3}
+    - {fileID: 21300000, guid: deeb3f52955e2d84c947e6b4099e22d1, type: 3}
+    - {fileID: 21300000, guid: a10da183579c64249aaa0d13c0192d59, type: 3}
+    - {fileID: 21300000, guid: 3ecffbdbc2e299e42933931ef5b5bddf, type: 3}
+    - {fileID: 21300000, guid: 33e8c9395625a064db571885c41c7ae1, type: 3}
+  - levelName: LevelSix
+    columns: 5
+    cardWidth: 200
+    cardSpacing: 40
+    cardImages:
+    - {fileID: 21300000, guid: 4f96ebb83b87d0c47bd107e0fe9056b1, type: 3}
+    - {fileID: 21300000, guid: f57d692804b53c64ebc5bd93d217e7f5, type: 3}
+    - {fileID: 21300000, guid: 98616dc01e0222d449d4c4e24a282b30, type: 3}
+    - {fileID: 21300000, guid: 33e8c9395625a064db571885c41c7ae1, type: 3}
+    - {fileID: 21300000, guid: f85f079e43525ca46bab00c29b095dba, type: 3}
+    - {fileID: 21300000, guid: 924f1966d178ef24a9695a5681a743eb, type: 3}
+    - {fileID: 21300000, guid: deeb3f52955e2d84c947e6b4099e22d1, type: 3}
+    - {fileID: 21300000, guid: a10da183579c64249aaa0d13c0192d59, type: 3}
+    - {fileID: 21300000, guid: f76aec74ba1fe4245a63024fb5457150, type: 3}
+    - {fileID: 21300000, guid: 3ecffbdbc2e299e42933931ef5b5bddf, type: 3}

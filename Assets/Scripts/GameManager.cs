@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -8,42 +9,26 @@ public class GameManager : MonoBehaviour
 
 
     public GameObject cardPrefab;
-    public Transform gridReference;
-    public List<Sprite> cardSprites;
+    public GridLayoutGroup gridReference;
+    public LevelData levelsData;
+    public float cardSpawnDelay = 0.1f;
+    public float cardFlipDelay = 1.5f;
 
     private List<Card> cards = new List<Card>();
     private Card firstSelected, secondSelected;
+    public int currentLevelIndex = 0;
     private int score = 0;
+    private Transform grid;
 
     private void Awake()
     {
         Instance = this;
+        grid = gridReference.transform;
     }
 
     private void Start()
     {
-        CreateCards();
-    }
-
-    void CreateCards()
-    {
-        cards.Clear();
-
-        List<int> ids = new List<int>();
-        for (int i = 0; i < cardSprites.Count; i++)
-        {
-            ids.Add(i);
-            ids.Add(i); // Add pair
-        }
-        Shuffle(ids);
-
-        for (int i = 0; i < ids.Count; i++)
-        {
-            GameObject newCard = Instantiate(cardPrefab, gridReference);
-            Card card = newCard.GetComponent<Card>();
-            card.Init(ids[i], cardSprites[ids[i]]);
-            cards.Add(card);
-        }
+        StartCoroutine(LoadLevel(currentLevelIndex));
     }
 
     void Shuffle(List<int> list)
@@ -55,7 +40,68 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void OnCardSelected(Card selected)
+    IEnumerator LoadLevel(int levelIndex)
+    {
+        ClearBoard();
+        SetupGrid(levelsData.levels[currentLevelIndex].columns);
+
+        List<int> ids = new();
+        for (int i = 0; i < levelsData.levels[currentLevelIndex].cardImages.Count; i++)
+        {
+            ids.Add(i);
+            ids.Add(i);
+        }
+        Shuffle(ids);
+
+        for (int i = 0; i < ids.Count; i++)
+        {
+            GameObject cardGO = Instantiate(cardPrefab, grid);
+            Card card = cardGO.GetComponent<Card>();
+            card.Init(ids[i], levelsData.levels[currentLevelIndex].cardImages[ids[i]]);
+            cards.Add(card);
+            yield return new WaitForSeconds(cardSpawnDelay);
+        }
+
+        yield return new WaitForSeconds(cardFlipDelay);
+        foreach (Card card in cards)
+        {
+            card.FlipDown();
+        }
+    }
+
+    void ClearBoard()
+    {
+        foreach (Transform child in grid)
+            Destroy(child.gameObject);
+        cards.Clear();
+        firstSelected = null;
+        secondSelected = null;
+    }
+
+    void SetupGrid(int cols)
+    {
+        gridReference.constraintCount = cols;
+
+        gridReference.cellSize = new Vector2(levelsData.levels[currentLevelIndex].cardWidth, levelsData.levels[currentLevelIndex].cardWidth);
+        gridReference.spacing = new Vector2(levelsData.levels[currentLevelIndex].cardSpacing, levelsData.levels[currentLevelIndex].cardSpacing);
+    }
+
+    public void NextLevel()
+    {
+        currentLevelIndex++;
+        if (currentLevelIndex < levelsData.levels.Count)
+        {
+           StartCoroutine(LoadLevel(currentLevelIndex));
+        }
+        else
+        {
+            Debug.Log("All levels completed!");
+            // You can show win UI here
+        }
+    }
+
+
+public void OnCardSelected(Card selected)
     {
         selected.FlipUp();
 
