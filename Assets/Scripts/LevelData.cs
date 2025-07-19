@@ -7,8 +7,9 @@ public struct LevelDataStruct
 {
     public string levelName;
     public int columns;
-    public float cardWidth;
-    public float cardSpacing;
+    public int rows;
+    public int padding;
+    public int cardSpacing;
     public List<Sprite> cardImages;
 
 }

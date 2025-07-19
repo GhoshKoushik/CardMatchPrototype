@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class GameManager : MonoBehaviour
 {
@@ -43,7 +44,13 @@ public class GameManager : MonoBehaviour
     IEnumerator LoadLevel(int levelIndex)
     {
         ClearBoard();
-        SetupGrid(levelsData.levels[currentLevelIndex].columns);
+
+        grid.GetComponent<DynamicGridScaler>().UpdateGrid(
+            levelsData.levels[currentLevelIndex].rows,
+            levelsData.levels[currentLevelIndex].columns,
+            levelsData.levels[currentLevelIndex].cardSpacing,
+            levelsData.levels[currentLevelIndex].padding
+        );
 
         List<int> ids = new();
         for (int i = 0; i < levelsData.levels[currentLevelIndex].cardImages.Count; i++)
@@ -76,14 +83,6 @@ public class GameManager : MonoBehaviour
         cards.Clear();
         firstSelected = null;
         secondSelected = null;
-    }
-
-    void SetupGrid(int cols)
-    {
-        gridReference.constraintCount = cols;
-
-        gridReference.cellSize = new Vector2(levelsData.levels[currentLevelIndex].cardWidth, levelsData.levels[currentLevelIndex].cardWidth);
-        gridReference.spacing = new Vector2(levelsData.levels[currentLevelIndex].cardSpacing, levelsData.levels[currentLevelIndex].cardSpacing);
     }
 
     public void NextLevel()
@@ -123,6 +122,8 @@ public void OnCardSelected(Card selected)
         if (firstSelected.cardId == secondSelected.cardId)
         {
             // Matched..score will be updated
+            firstSelected.transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBounce);
+            secondSelected.transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBounce);
         }
         else
         {

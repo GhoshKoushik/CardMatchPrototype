@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using DG.Tweening;
 
 public class Card : MonoBehaviour
 {
@@ -23,12 +24,14 @@ public class Card : MonoBehaviour
     {
         isFlipped = true;
         cardImage.sprite = frontImage;
+        transform.DORotateQuaternion(Quaternion.Euler(0, 180, 0), 0.5f);
     }
 
     public void FlipDown()
     {
         isFlipped = false;
         cardImage.sprite = backImage;
+        transform.DORotateQuaternion(Quaternion.Euler(0, 0, 0), 0.5f);
     }
 
     public void OnClick()
