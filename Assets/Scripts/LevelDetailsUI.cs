@@ -22,6 +22,8 @@ public class LevelDetailsUI : MonoBehaviour
             {
                 levelButton.SetLevelIndex(i, levelData.levelName);
                 levelButton.SetLocked(SaveSystem.GetUnlockedLevelIndex() < i);
+                levelButton.turmAmountTXT.text = $"Turn: {SaveSystem.GetSavedLevelTurn(i)}";
+                levelButton.comboAmountTXT.text = $"Combo: {SaveSystem.GetSavedLevelCombo(i)}";
             }
         }
     }

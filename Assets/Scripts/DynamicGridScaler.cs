@@ -27,7 +27,7 @@ public class DynamicGridScaler : MonoBehaviour
         float cellWidth = (size.x - (padding.x * 2) - (spacing.x * (columns - 1))) / columns;
         float cellHeight = (size.y - (padding.y * 2) - (spacing.y * (rows - 1))) / rows;
         float cellSize = Mathf.Min(cellWidth, cellHeight); // Keep square cards
-
+        container.GetComponent<GridLayoutGroup>().padding = new RectOffset((int)padding.x, (int)padding.x, (int)padding.y, (int)padding.y);
         container.GetComponent<GridLayoutGroup>().cellSize = new Vector2(cellSize, cellSize);
         container.GetComponent<GridLayoutGroup>().spacing = spacing;
         container.GetComponent<GridLayoutGroup>().constraint = GridLayoutGroup.Constraint.FixedColumnCount;

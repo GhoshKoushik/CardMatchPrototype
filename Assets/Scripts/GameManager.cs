@@ -14,23 +14,34 @@ public class GameManager : MonoBehaviour
     public LevelData levelsData;
     public float cardSpawnDelay = 0.1f;
     public float cardFlipDelay = 1.5f;
+    public float comboDuration = 5f;
 
     private List<Card> cards = new List<Card>();
     private Card firstSelected, secondSelected, thirdSelected, fourthSelected;
     private bool isCheckingMatch = false;
-    private bool isComboActive = false;
+    private bool multiClickHappened = false;
     public int currentLevelIndex = 0;
     private int score = 0;
     private Transform grid;
     public int totalPairs;
     private int matchedPairs;
+    private int turnsTaken = 0;
+    private bool isComboActive = false;
+    public int comboCount = 0;
+    private float timeLeft = 5f;
+    private bool isTimerRunning = true;
 
     private void Awake()
     {
         Instance = this;
         grid = gridReference.transform;
+        isTimerRunning = false;
     }
 
+    private void Start()
+    {
+       score = SaveSystem.GetSavedScore();
+    }
     void Shuffle(List<int> list)
     {
         for (int i = 0; i < list.Count; i++)
@@ -42,8 +53,6 @@ public class GameManager : MonoBehaviour
 
     public void RestartGame()
     {
-        currentLevelIndex = 0;
-        score = 0;
         ClearBoard();
         StartCoroutine(LevelLoader(currentLevelIndex));
     }
@@ -56,13 +65,21 @@ public class GameManager : MonoBehaviour
             return;
         }
         currentLevelIndex = levelIndex;
+
         StartCoroutine(LevelLoader(currentLevelIndex));
     }
     IEnumerator LevelLoader(int levelIndex)
     {
         yield return new WaitForSeconds(0.1f);
+        turnsTaken = 0;
+        matchedPairs = 0;
+        comboCount = 0;
+
         ClearBoard();
         totalPairs = levelsData.levels[currentLevelIndex].cardImages.Count;
+        UIManager.Instance.turnText.text = $"Turn: {turnsTaken}";
+        UIManager.Instance.matchText.text = $"Matched: {matchedPairs}/{totalPairs}";
+        UIManager.Instance.comboText.text = $"Combos: {comboCount}";
         grid.GetComponent<DynamicGridScaler>().UpdateGrid(
             levelsData.levels[currentLevelIndex].rows,
             levelsData.levels[currentLevelIndex].columns,
@@ -106,6 +123,7 @@ public class GameManager : MonoBehaviour
     public void NextLevel()
     {
         currentLevelIndex++;
+        
         if (currentLevelIndex < levelsData.levels.Count)
         {
            StartCoroutine(LevelLoader(currentLevelIndex));
@@ -113,6 +131,8 @@ public class GameManager : MonoBehaviour
         else
         {
             Debug.Log("All levels completed!");
+            UIManager.Instance.ActivateUI(UIManager.Instance.gameOverUI.name);
+            AudioManager.Instance.Play(SoundType.GameOver);
         }
     }
 
@@ -120,11 +140,11 @@ public class GameManager : MonoBehaviour
     public void OnCardSelected(Card selected)
     {
         if (isCheckingMatch)
-            isComboActive = true;
+            multiClickHappened = true;
 
         selected.FlipUp();
         AudioManager.Instance.Play(SoundType.Flip);
-        if (isComboActive)
+        if (multiClickHappened)
         {
             if (thirdSelected == null)
             {
@@ -153,7 +173,23 @@ public class GameManager : MonoBehaviour
     public void OnMatchSuccess()
     {
         matchedPairs++;
-
+        if(isComboActive)
+        {
+            comboCount++;
+            score += 50; 
+            timeLeft = comboDuration; 
+        }
+        else
+        {
+            isComboActive = true;
+            timeLeft = comboDuration;
+            isTimerRunning = true;
+            score += 10;
+        }
+        UIManager.Instance.UpdateScore(score);
+        SaveSystem.SaveScore(score);
+        UIManager.Instance.matchText.text = $"Matched: {matchedPairs}/{totalPairs}";
+        UIManager.Instance.comboText.text = $"Combos: {comboCount}";
         if (matchedPairs >= totalPairs)
         {
             OnAllCardsMatched();
@@ -165,30 +201,48 @@ public class GameManager : MonoBehaviour
         Debug.Log("All cards matched!");
         matchedPairs = 0; // Reset matched pairs for next level
         SaveSystem.UnlockNextLevel(currentLevelIndex);
-
+        isTimerRunning = false;
+        isComboActive = false;
+        UIManager.Instance.comboCountText.text = "Combo Timer: 0";
+        SaveSystem.SaveLevelTurn(currentLevelIndex, turnsTaken);
+        SaveSystem.SaveLevelCombo(currentLevelIndex, comboCount);
         // Show win screen or move to next level
-        UIManager.Instance.ActivateUI(UIManager.Instance.nextLevelUI.name);
+        StartCoroutine(LevelComplete());
     }
 
+    IEnumerator LevelComplete()
+    {
+        yield return new WaitForSeconds(1f);
+        UIManager.Instance.ActivateUI(UIManager.Instance.nextLevelUI.name);
+        AudioManager.Instance.Play(SoundType.LevelComplete);
+    }
     IEnumerator CheckMatch()
     {
-        if (!isComboActive)
+        if (!multiClickHappened)
         { 
             isCheckingMatch = true;
             yield return new WaitForSeconds(0.5f);
             if (firstSelected.cardId == secondSelected.cardId)
             {
-                // Matched..score will be updated
+                turnsTaken++;
                 AudioManager.Instance.Play(SoundType.Match);
+                UIManager.Instance.turnText.text = $"Turn: {turnsTaken}";
                 firstSelected.transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBounce);
                 secondSelected.transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBounce);
                 OnMatchSuccess();
+
             }
             else
             {
+                turnsTaken++;
                 firstSelected.FlipDown();
                 secondSelected.FlipDown();
+                UIManager.Instance.turnText.text = $"Turn: {turnsTaken}";
                 AudioManager.Instance.Play(SoundType.Fail);
+                isTimerRunning = false;
+                isComboActive = false;
+                UIManager.Instance.comboCountText.text = "Combo Timer: 0";
+
             }
             isCheckingMatch = false;
             firstSelected = null;
@@ -196,25 +250,50 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            isComboActive = false;
+            multiClickHappened = false;
             yield return new WaitForSeconds(0.5f);
             if (thirdSelected.cardId == fourthSelected.cardId)
             {
                 // Matched..score will be updated
+                turnsTaken++;
                 AudioManager.Instance.Play(SoundType.Match);
+                UIManager.Instance.turnText.text = $"Turn: {turnsTaken}";
                 thirdSelected.transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBounce);
                 fourthSelected.transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBounce);
                 OnMatchSuccess();
-                score += 10; // Update score for combo match
             }
             else
             {
+                turnsTaken++;
                 thirdSelected.FlipDown();
                 fourthSelected.FlipDown();
+                UIManager.Instance.turnText.text = $"Turn: {turnsTaken}";
                 AudioManager.Instance.Play(SoundType.Fail);
+                isTimerRunning = false;
+                isComboActive = false;
+                UIManager.Instance.comboCountText.text = "Combo Timer: 0";
             }
             thirdSelected = null;
             fourthSelected = null;
+        }
+    }
+
+    private void Update()
+    {
+        if (!isTimerRunning) return;
+
+        timeLeft -= Time.deltaTime;
+
+        if (timeLeft <= 0f)
+        {
+            timeLeft = 0f;
+            isTimerRunning = false;
+            Debug.Log("5 seconds over!");
+        }
+
+        if (UIManager.Instance.comboCountText)
+        {
+            UIManager.Instance.comboCountText.text = "Combo Timer: " + Mathf.CeilToInt(timeLeft).ToString();
         }
     }
 }

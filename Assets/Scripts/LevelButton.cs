@@ -8,6 +8,8 @@ public class LevelButton : MonoBehaviour
 {
     public int levelIndex;
     public TMP_Text levelText;
+    public TMP_Text turmAmountTXT;
+    public TMP_Text comboAmountTXT;
     public GameObject lockedSprite;
     public bool isLocked = true;
     private Button button;
@@ -29,6 +31,7 @@ public class LevelButton : MonoBehaviour
     public void OnClick()
     {
         UIManager.Instance.ActivateUI(UIManager.Instance.gameUI.name);
+        UIManager.Instance.ActivateScoreStatus(true);
         GameManager.Instance.LoadLevel(levelIndex);
     }
 

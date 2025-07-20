@@ -5,13 +5,15 @@ public enum SoundType
 {
     Flip,
     Match,
-    Fail
+    Fail,
+    LevelComplete,
+    GameOver
 }
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance;
     public AudioSource audioSource;
-    public AudioClip flipSound, matchSound, failSound;
+    public AudioClip flipSound, matchSound, failSound, levelCompleteSound, gameOverSound;
 
     private void Awake()
     {
@@ -30,6 +32,12 @@ public class AudioManager : MonoBehaviour
                 break;
             case SoundType.Fail:
                 audioSource.PlayOneShot(failSound);
+                break;
+            case SoundType.LevelComplete:
+                audioSource.PlayOneShot(levelCompleteSound);
+                break;
+            case SoundType.GameOver:
+                audioSource.PlayOneShot(gameOverSound);
                 break;
             default:
                 Debug.LogWarning("Unknown sound type: " + soundType);
