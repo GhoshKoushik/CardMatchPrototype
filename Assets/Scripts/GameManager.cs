@@ -118,6 +118,8 @@ public class GameManager : MonoBehaviour
         cards.Clear();
         firstSelected = null;
         secondSelected = null;
+        thirdSelected = null;
+        fourthSelected = null;
     }
 
     public void NextLevel()
