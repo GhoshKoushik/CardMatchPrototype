@@ -16,7 +16,9 @@ public class GameManager : MonoBehaviour
     public float cardFlipDelay = 1.5f;
 
     private List<Card> cards = new List<Card>();
-    private Card firstSelected, secondSelected;
+    private Card firstSelected, secondSelected, thirdSelected, fourthSelected;
+    private bool isCheckingMatch = false;
+    private bool isComboActive = false;
     public int currentLevelIndex = 0;
     private int score = 0;
     private Transform grid;
@@ -95,43 +97,87 @@ public class GameManager : MonoBehaviour
         else
         {
             Debug.Log("All levels completed!");
-            // You can show win UI here
         }
     }
 
 
-public void OnCardSelected(Card selected)
+    public void OnCardSelected(Card selected)
     {
-        selected.FlipUp();
+        if (isCheckingMatch)
+            isComboActive = true;
 
-        if (firstSelected == null)
+        selected.FlipUp();
+        AudioManager.Instance.Play(SoundType.Flip);
+        if (isComboActive)
         {
-            firstSelected = selected;
+            if (thirdSelected == null)
+            {
+                thirdSelected = selected;
+            }
+            else if (fourthSelected == null)
+            {
+                fourthSelected = selected;
+                StartCoroutine(CheckMatch());
+            }
         }
         else
-        {
-            secondSelected = selected;
-            StartCoroutine(CheckMatch());
+        { 
+            if (firstSelected == null)
+            {
+                firstSelected = selected;
+            }
+            else
+            {
+                secondSelected = selected;
+                StartCoroutine(CheckMatch());
+            }
         }
     }
 
     IEnumerator CheckMatch()
     {
-        yield return new WaitForSeconds(0.5f);
+        if (!isComboActive)
+        { 
+            isCheckingMatch = true;
+            yield return new WaitForSeconds(0.5f);
+            if (firstSelected.cardId == secondSelected.cardId)
+            {
+                // Matched..score will be updated
+                AudioManager.Instance.Play(SoundType.Match);
+                firstSelected.transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBounce);
+                secondSelected.transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBounce);
 
-        if (firstSelected.cardId == secondSelected.cardId)
-        {
-            // Matched..score will be updated
-            firstSelected.transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBounce);
-            secondSelected.transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBounce);
+            }
+            else
+            {
+                firstSelected.FlipDown();
+                secondSelected.FlipDown();
+                AudioManager.Instance.Play(SoundType.Fail);
+            }
+            isCheckingMatch = false;
+            firstSelected = null;
+            secondSelected = null;
         }
         else
         {
-            firstSelected.FlipDown();
-            secondSelected.FlipDown();
+            isComboActive = false;
+            yield return new WaitForSeconds(0.5f);
+            if (thirdSelected.cardId == fourthSelected.cardId)
+            {
+                // Matched..score will be updated
+                AudioManager.Instance.Play(SoundType.Match);
+                thirdSelected.transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBounce);
+                fourthSelected.transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBounce);
+                score += 10; // Update score for combo match
+            }
+            else
+            {
+                thirdSelected.FlipDown();
+                fourthSelected.FlipDown();
+                AudioManager.Instance.Play(SoundType.Fail);
+            }
+            thirdSelected = null;
+            fourthSelected = null;
         }
-
-        firstSelected = null;
-        secondSelected = null;
     }
 }
