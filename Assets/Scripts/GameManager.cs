@@ -22,16 +22,13 @@ public class GameManager : MonoBehaviour
     public int currentLevelIndex = 0;
     private int score = 0;
     private Transform grid;
+    public int totalPairs;
+    private int matchedPairs;
 
     private void Awake()
     {
         Instance = this;
         grid = gridReference.transform;
-    }
-
-    private void Start()
-    {
-        StartCoroutine(LoadLevel(currentLevelIndex));
     }
 
     void Shuffle(List<int> list)
@@ -43,10 +40,29 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    IEnumerator LoadLevel(int levelIndex)
+    public void RestartGame()
     {
+        currentLevelIndex = 0;
+        score = 0;
         ClearBoard();
+        StartCoroutine(LevelLoader(currentLevelIndex));
+    }
 
+    public void LoadLevel(int levelIndex)
+    {
+        if (levelIndex < 0 || levelIndex >= levelsData.levels.Count)
+        {
+            Debug.LogError("Invalid level index: " + levelIndex);
+            return;
+        }
+        currentLevelIndex = levelIndex;
+        StartCoroutine(LevelLoader(currentLevelIndex));
+    }
+    IEnumerator LevelLoader(int levelIndex)
+    {
+        yield return new WaitForSeconds(0.1f);
+        ClearBoard();
+        totalPairs = levelsData.levels[currentLevelIndex].cardImages.Count;
         grid.GetComponent<DynamicGridScaler>().UpdateGrid(
             levelsData.levels[currentLevelIndex].rows,
             levelsData.levels[currentLevelIndex].columns,
@@ -54,7 +70,7 @@ public class GameManager : MonoBehaviour
             levelsData.levels[currentLevelIndex].padding
         );
 
-        List<int> ids = new();
+        List<int> ids = new List<int>();
         for (int i = 0; i < levelsData.levels[currentLevelIndex].cardImages.Count; i++)
         {
             ids.Add(i);
@@ -92,7 +108,7 @@ public class GameManager : MonoBehaviour
         currentLevelIndex++;
         if (currentLevelIndex < levelsData.levels.Count)
         {
-           StartCoroutine(LoadLevel(currentLevelIndex));
+           StartCoroutine(LevelLoader(currentLevelIndex));
         }
         else
         {
@@ -134,6 +150,26 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void OnMatchSuccess()
+    {
+        matchedPairs++;
+
+        if (matchedPairs >= totalPairs)
+        {
+            OnAllCardsMatched();
+        }
+    }
+
+    void OnAllCardsMatched()
+    {
+        Debug.Log("All cards matched!");
+        matchedPairs = 0; // Reset matched pairs for next level
+        SaveSystem.UnlockNextLevel(currentLevelIndex);
+
+        // Show win screen or move to next level
+        UIManager.Instance.ActivateUI(UIManager.Instance.nextLevelUI.name);
+    }
+
     IEnumerator CheckMatch()
     {
         if (!isComboActive)
@@ -146,7 +182,7 @@ public class GameManager : MonoBehaviour
                 AudioManager.Instance.Play(SoundType.Match);
                 firstSelected.transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBounce);
                 secondSelected.transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBounce);
-
+                OnMatchSuccess();
             }
             else
             {
@@ -168,6 +204,7 @@ public class GameManager : MonoBehaviour
                 AudioManager.Instance.Play(SoundType.Match);
                 thirdSelected.transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBounce);
                 fourthSelected.transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBounce);
+                OnMatchSuccess();
                 score += 10; // Update score for combo match
             }
             else

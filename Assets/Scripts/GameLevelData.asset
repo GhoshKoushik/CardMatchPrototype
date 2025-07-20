@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GameLevelData
   m_EditorClassIdentifier: 
   levels:
-  - levelName: LevelOne
+  - levelName: Level One
     columns: 2
     rows: 2
     padding: 40
@@ -21,7 +21,7 @@ MonoBehaviour:
     cardImages:
     - {fileID: 21300000, guid: 98616dc01e0222d449d4c4e24a282b30, type: 3}
     - {fileID: 21300000, guid: f85f079e43525ca46bab00c29b095dba, type: 3}
-  - levelName: LevelTwo
+  - levelName: Level Two
     columns: 3
     rows: 3
     padding: 40
@@ -30,7 +30,7 @@ MonoBehaviour:
     - {fileID: 21300000, guid: a10da183579c64249aaa0d13c0192d59, type: 3}
     - {fileID: 21300000, guid: deeb3f52955e2d84c947e6b4099e22d1, type: 3}
     - {fileID: 21300000, guid: 4f96ebb83b87d0c47bd107e0fe9056b1, type: 3}
-  - levelName: LevelThree
+  - levelName: Level Three
     columns: 2
     rows: 3
     padding: 40
@@ -39,7 +39,7 @@ MonoBehaviour:
     - {fileID: 21300000, guid: f76aec74ba1fe4245a63024fb5457150, type: 3}
     - {fileID: 21300000, guid: 3ecffbdbc2e299e42933931ef5b5bddf, type: 3}
     - {fileID: 21300000, guid: f85f079e43525ca46bab00c29b095dba, type: 3}
-  - levelName: LevelFour
+  - levelName: Level Four
     columns: 4
     rows: 4
     padding: 40
@@ -49,7 +49,7 @@ MonoBehaviour:
     - {fileID: 21300000, guid: f85f079e43525ca46bab00c29b095dba, type: 3}
     - {fileID: 21300000, guid: 4f96ebb83b87d0c47bd107e0fe9056b1, type: 3}
     - {fileID: 21300000, guid: 33e8c9395625a064db571885c41c7ae1, type: 3}
-  - levelName: LevelFive
+  - levelName: Level Five
     columns: 4
     rows: 4
     padding: 40
@@ -63,7 +63,7 @@ MonoBehaviour:
     - {fileID: 21300000, guid: a10da183579c64249aaa0d13c0192d59, type: 3}
     - {fileID: 21300000, guid: 3ecffbdbc2e299e42933931ef5b5bddf, type: 3}
     - {fileID: 21300000, guid: 33e8c9395625a064db571885c41c7ae1, type: 3}
-  - levelName: LevelSix
+  - levelName: Level Six
     columns: 5
     rows: 5
     padding: 40
